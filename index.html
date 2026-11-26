@@ -1,1 +1,587 @@
 
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b12">
+<title>GROK AI</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #080b12;
+  --panel: #101725;
+  --panel2: #151f30;
+  --blue: #287cff;
+  --blue2: #55a5ff;
+  --text: #f3f6fc;
+  --muted: #8290a5;
+  --border: #202c3e;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+button, input, textarea, select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.app {
+  display: flex;
+  height: 100dvh;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+  width: 265px;
+  background: #0c111b;
+  border-right: 1px solid var(--border);
+  padding: 22px 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.logo {
+  font-size: 27px;
+  font-weight: 850;
+  letter-spacing: 3px;
+  color: white;
+}
+
+.logo span {
+  color: var(--blue2);
+}
+
+.new-chat {
+  border: 1px solid #285da5;
+  background: #132849;
+  color: #8fc2ff;
+  border-radius: 12px;
+  padding: 13px;
+  text-align: left;
+}
+
+.section-label {
+  color: var(--muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 10px;
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+}
+
+.history-item {
+  padding: 11px;
+  border-radius: 9px;
+  background: transparent;
+  color: #b7c3d5;
+  border: none;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.history-item.active,
+.history-item:active {
+  background: var(--panel2);
+  color: white;
+}
+
+.sidebar-bottom {
+  margin-top: auto;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* MAIN */
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 70px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 23px;
+}
+
+.top-left {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.menu-button {
+  display: none;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 23px;
+}
+
+.status {
+  color: #52d69b;
+  font-size: 11px;
+}
+
+.model-select {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: white;
+  border-radius: 9px;
+  padding: 10px;
+  max-width: 175px;
+}
+
+.chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 30px 18px;
+}
+
+.welcome {
+  max-width: 650px;
+  margin: 12vh auto 0;
+  text-align: center;
+}
+
+.orb {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  margin: auto auto 22px;
+  background: radial-gradient(circle at 35% 30%, #8ecaff, #287cff 45%, #10244e 75%);
+  box-shadow: 0 0 45px #287cff55;
+}
+
+.welcome h1 {
+  font-size: 36px;
+  letter-spacing: 4px;
+  margin-bottom: 12px;
+}
+
+.welcome h1 span {
+  color: var(--blue2);
+}
+
+.welcome p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.suggestions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 35px;
+}
+
+.suggestion {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: #c6d3e6;
+  padding: 16px;
+  border-radius: 12px;
+  text-align: left;
+  font-size: 13px;
+}
+
+.suggestion:active {
+  border-color: var(--blue);
+}
+
+/* MESSAGES */
+
+.messages {
+  max-width: 800px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.message {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.message.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  background: #17345c;
+  border-radius: 10px;
+  color: #80baff;
+  font-weight: bold;
+}
+
+.message.user .avatar {
+  background: #252f40;
+  color: white;
+}
+
+.bubble {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 13px 15px;
+  max-width: 85%;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.message.user .bubble {
+  background: #142b4c;
+  border-color: #244e80;
+}
+
+/* INPUT */
+
+.input-area {
+  padding: 12px 18px 20px;
+}
+
+.input-box {
+  max-width: 800px;
+  margin: auto;
+  background: var(--panel);
+  border: 1px solid #293a52;
+  border-radius: 16px;
+  padding: 12px;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.input-box textarea {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: white;
+  resize: none;
+  min-height: 40px;
+  max-height: 120px;
+  padding: 10px 4px;
+  font-size: 14px;
+}
+
+.send {
+  width: 43px;
+  height: 43px;
+  border: none;
+  border-radius: 11px;
+  background: var(--blue);
+  color: white;
+  font-size: 19px;
+}
+
+.send:active {
+  background: #1762d5;
+}
+
+.disclaimer {
+  text-align: center;
+  color: #68778b;
+  font-size: 10px;
+  margin-top: 10px;
+}
+
+@media(max-width: 650px) {
+  .sidebar {
+    position: fixed;
+    z-index: 5;
+    left: -280px;
+    top: 0;
+    bottom: 0;
+    transition: left .25s;
+    box-shadow: 10px 0 35px #0008;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .menu-button {
+    display: block;
+  }
+
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .welcome {
+    margin-top: 9vh;
+  }
+
+  .welcome h1 {
+    font-size: 30px;
+  }
+
+  .chat {
+    padding: 20px 12px;
+  }
+
+  .suggestions {
+    gap: 8px;
+  }
+
+  .suggestion {
+    padding: 12px;
+  }
+
+  .input-area {
+    padding: 10px 10px 15px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<aside class="sidebar" id="sidebar">
+  <div class="logo">GROK<span>.</span></div>
+
+  <button class="new-chat" onclick="newChat()">
+    ＋ Новый чат
+  </button>
+
+  <div>
+    <div class="section-label">История чатов</div>
+    <div class="history" id="history"></div>
+  </div>
+
+  <div class="sidebar-bottom">
+    GROK AI · Personal Edition<br>
+    Версия 1.0 · Interface Preview
+  </div>
+</aside>
+
+<main class="main">
+
+  <header class="topbar">
+    <div class="top-left">
+      <button class="menu-button" onclick="toggleMenu()">☰</button>
+      <div>
+        <div style="font-weight:700">GROK AI</div>
+        <div class="status">● Личный помощник</div>
+      </div>
+    </div>
+
+    <select class="model-select" id="model">
+      <option value="Grok">Grok · xAI</option>
+      <option value="GPT">GPT · OpenAI</option>
+      <option value="Gemini">Gemini · Google</option>
+      <option value="Claude">Claude · Anthropic</option>
+      <option value="Local">Локальная модель</option>
+    </select>
+  </header>
+
+  <section class="chat" id="chat">
+    <div class="welcome" id="welcome">
+      <div class="orb"></div>
+      <h1>HELLO, <span>DEVELOPER.</span></h1>
+      <p>
+        Я GROK — твой персональный помощник
+        в программировании и разработке проектов.
+        <br><br>
+        Чем займёмся сегодня?
+      </p>
+
+      <div class="suggestions">
+        <button class="suggestion" onclick="suggest('Помоги создать Telegram-бота на Python')">
+          🤖 Создать Telegram-бота
+        </button>
+        <button class="suggestion" onclick="suggest('Напиши код сайта на HTML и CSS')">
+          💻 Создать сайт
+        </button>
+        <button class="suggestion" onclick="suggest('Помоги найти ошибку в Python-коде')">
+          🔧 Найти ошибку
+        </button>
+        <button class="suggestion" onclick="suggest('Объясни, как работает GitHub')">
+          ⚡ Помощь с GitHub
+        </button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages"></div>
+  </section>
+
+  <footer class="input-area">
+    <div class="input-box">
+      <textarea id="prompt"
+        placeholder="Напиши сообщение GROK..."
+        rows="1"></textarea>
+      <button class="send" onclick="sendMessage()">↑</button>
+    </div>
+    <div class="disclaimer">
+      Демонстрационный интерфейс. ИИ API пока не подключён.
+    </div>
+  </footer>
+
+</main>
+</div>
+
+<script>
+let chats = JSON.parse(localStorage.getItem("grok_chats") || "[]");
+let currentChat = null;
+
+function save() {
+  localStorage.setItem("grok_chats", JSON.stringify(chats));
+}
+
+function newChat() {
+  currentChat = {
+    id: Date.now(),
+    title: "Новый чат",
+    messages: []
+  };
+
+  chats.unshift(currentChat);
+  save();
+  render();
+  document.getElementById("prompt").focus();
+}
+
+function selectChat(id) {
+  currentChat = chats.find(c => c.id === id);
+  render();
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+function render() {
+  const history = document.getElementById("history");
+  history.innerHTML = "";
+
+  chats.forEach(chat => {
+    const button = document.createElement("button");
+    button.className = "history-item" +
+      (currentChat && currentChat.id === chat.id ? " active" : "");
+    button.textContent = "◷ " + chat.title;
+    button.onclick = () => selectChat(chat.id);
+    history.appendChild(button);
+  });
+
+  const messages = document.getElementById("messages");
+  messages.innerHTML = "";
+
+  const welcome = document.getElementById("welcome");
+
+  if (!currentChat || currentChat.messages.length === 0) {
+    welcome.style.display = "block";
+  } else {
+    welcome.style.display = "none";
+
+    currentChat.messages.forEach(msg => {
+      const row = document.createElement("div");
+      row.className = "message " + msg.role;
+
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.textContent = msg.role === "user" ? "Я" : "G";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = msg.text;
+
+      row.append(avatar, bubble);
+      messages.appendChild(row);
+    });
+  }
+
+  document.getElementById("chat").scrollTop =
+    document.getElementById("chat").scrollHeight;
+}
+
+function addMessage(role, text) {
+  currentChat.messages.push({role, text});
+  save();
+  render();
+}
+
+function sendMessage() {
+  const input = document.getElementById("prompt");
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  if (!currentChat) newChat();
+
+  addMessage("user", text);
+
+  if (currentChat.messages.length === 1) {
+    currentChat.title = text.slice(0, 27);
+    save();
+  }
+
+  input.value = "";
+
+  addMessage("assistant",
+    "Я получил твоё сообщение! Сейчас я работаю в демонстрационном режиме. Для настоящих ответов необходимо подключить сервер и выбранную ИИ-модель через API."
+  );
+}
+
+function suggest(text) {
+  document.getElementById("prompt").value = text;
+  sendMessage();
+}
+
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+document.getElementById("prompt").addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
+
